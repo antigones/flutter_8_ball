@@ -17,6 +17,7 @@ class AppTheme extends ChangeNotifier {
   ThemeMode get mode => _mode;
   set mode(ThemeMode mode) {
     _mode = mode;
+    print('notifying');
     notifyListeners();
   }
 

@@ -1,4 +1,5 @@
 import 'package:fluent_ui/fluent_ui.dart';
+
 import 'package:flutter_8_ball/answer_screen.dart';
 import 'package:flutter_8_ball/sibilla.dart';
 import 'package:flutter_8_ball/theme.dart';
@@ -6,6 +7,8 @@ import 'package:flutter_8_ball/window_buttons.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_acrylic/flutter_acrylic.dart' as flutter_acrylic;
 import 'package:window_manager/window_manager.dart';
+
+import 'settings_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -36,6 +39,7 @@ class MyApp extends StatelessWidget {
         create: (_) => AppTheme(),
         builder: (context, _) {
           final appTheme = context.watch<AppTheme>();
+          print(appTheme.mode);
           return FluentApp(
             title: "La Sibilla",
             themeMode: appTheme.mode,
@@ -43,6 +47,13 @@ class MyApp extends StatelessWidget {
             initialRoute: '/',
             routes: {'/': (_) => const MyHomePage()},
             color: appTheme.color,
+            darkTheme: ThemeData(
+                brightness: Brightness.dark,
+                accentColor: appTheme.color,
+                visualDensity: VisualDensity.standard,
+                focusTheme: FocusThemeData(
+                  glowFactor: is10footScreen() ? 2.0 : 0.0,
+                )),
             theme: ThemeData(
               accentColor: appTheme.color,
               visualDensity: VisualDensity.standard,
@@ -86,6 +97,8 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
     super.dispose();
   }
 
+  int index = 0;
+
   @override
   Widget build(BuildContext context) {
     return NavigationView(
@@ -98,7 +111,28 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
           ),
         ),
       ),
-      content: NavigationBody(index: 0, children: const [AnswerScreen()]),
+      pane: NavigationPane(
+          selected: index,
+          onChanged: (newIndex) {
+            setState(() {
+              index = newIndex;
+            });
+          },
+          displayMode: PaneDisplayMode.auto,
+          items: [
+            PaneItem(
+                icon: const Icon(FluentIcons.balloons),
+                title: const Text("Sibilla")),
+            PaneItem(
+                icon: const Icon(FluentIcons.settings),
+                title: const Text("Settings"))
+          ]),
+      content: NavigationBody(index: index, children: [
+        AnswerScreen(controller: settingsController),
+        SettingsScreen(
+          controller: settingsController,
+        )
+      ]),
     );
   }
 }
