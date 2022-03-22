@@ -5,6 +5,7 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
+import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_8_ball/sibilla.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -12,22 +13,33 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_8_ball/main.dart';
 import 'package:provider/provider.dart';
 
-void main() {
-  testWidgets('Initial string test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(ChangeNotifierProvider(
-      create: (context) => Sibilla(),
-      child: const MyApp(),
-    ),);
+final List<String> _answers = [
+  "As I see it, yes",
+  "It is certain",
+  "It is decidedly so",
+  "Most likely",
+  "Outlook good",
+  "Signs point to yes",
+  "Without a doubt",
+  "Yes",
+  "Yes – definitely",
+];
 
-    // Verify that our counter starts at 0.
+
+void main() {
+  testWidgets('Get answer test', (WidgetTester tester) async {
+    await tester.pumpWidget(const MyApp());
+
     expect(find.text('Ask a question and click the button...'), findsOneWidget);
     expect(find.text(''), findsNothing);
-
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.loop));
-    await tester.pump();
-
-
+    await tester.tap(find.byType(FilledButton));
+    await tester.pump(const Duration(seconds: 3));
+    expect(
+        find.byWidgetPredicate(
+          (Widget widget) =>
+              (widget is Text) && (_answers.contains(widget.data)),
+        ),
+        findsOneWidget);
+    await tester.pump(const Duration(seconds: 3));
   });
 }
